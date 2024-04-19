@@ -57,6 +57,7 @@
         <div class="col-lg-12">
           <div class="card chat-app">
             <div id="plist" class="people-list" style="background-color: white">
+             
               
               <button class="btn btn-primary" id="btnAddGroup"> Add Group</button>
               <div class="input-group">
@@ -71,7 +72,14 @@
                   placeholder="Search..."
                 />
               </div>
-              <ul class="list-unstyled chat-list mt-2 mb-0"></ul>
+              <ul class="list-unstyled chat-list mt-2 mb-0">
+                <div class="userList">
+                  <h6 class="text-center">Users</h6>
+                </div>
+                <div class="groupList">
+                  <h6 class="text-center">Groups</h6>
+                </div>
+              </ul>
             </div>
             <div class="chat d-none">
               <div class="chat-header clearfix">
@@ -149,6 +157,7 @@
           </div>
           <div class="modal-body ">
            <div class="form-group">
+            <input type="text" class="form-control" placeholder="Group Name" name="groupName" id="groupName">
             <select class="js-example-basic-multiple form-control" name="states[]" multiple="multiple">
              
             </select>
@@ -173,13 +182,26 @@
         $.ajax({
           url: "http://localhost:8000/message/createGroup",
           type: "POST",
-          data: JSON.stringify({ members: selectedUsers }),
+          data: JSON.stringify({ members: selectedUsers,name: $('input[name="groupName"]').val()}),
           contentType: "application/json; charset=utf-8",
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
           success: function (response) {
-            console.log(response);
+            $(".chat-list .groupList").append(`
+            <li class="clearfix" data-userId="${response._id}">
+                  <img
+                    src="https://bootdey.com/img/Content/avatar/avatar2.png"
+                    alt="avatar"
+                  />
+                  <div class="about">
+                    <div class="name">${(response.Name) || 'Group'}</div>
+                    <div class="status">
+                      <i class="fa fa-circle online"></i> online
+                    </div>
+                  </div>
+                </li>
+            `);
           },
           error: function (xhr, status, error) {
             console.error("Request failed. Status: " + status);
@@ -239,13 +261,48 @@
                 UserGroupOptions += `<option value="${user._id}">${user.Name}</option>`;
               });
             // console.log(user);
-            $(".chat-list").append(userList);
+            $(" .userList").append(userList);
             $(".js-example-basic-multiple").html(UserGroupOptions);
           },
           error: function (xhr, status, error) {
             console.error("Request failed. Status: " + status);
           },
         });
+       
+        $.ajax({
+          url: "http://localhost:8000/message/group",
+          type: "GET",
+          contentType: "application/json; charset=utf-8",
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+          success: function (response) {
+            console.log(response);
+            var group = ``;
+            var UserGroupOptions = ``;
+            response.forEach((groups) => {
+              group += `<li class="clearfix" data-userId="${groups._id}">
+                  <img
+                    src="https://bootdey.com/img/Content/avatar/avatar2.png"
+                    alt="avatar"
+                  />
+                  <div class="about">
+                    <div class="name">${(groups.Name) || 'Group'}</div>
+                    <div class="status">
+                      <i class="fa fa-circle online"></i> online
+                    </div>
+                  </div>
+                </li>`;   
+            });
+            // console.log(user);
+            $(" .groupList").append(group);
+          },
+          error: function (xhr, status, error) {
+            console.error("Request failed. Status: " + status);
+          },
+        });
+      
+      
       }
 
       async function getMessage(userId) {
