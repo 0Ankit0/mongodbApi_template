@@ -1,7 +1,10 @@
+var socket;
 
+if (!socket || !socket.connected) {
+    socket = io('http://localhost:8000/');
+}
 const form = $("#loginForm");
 
-const socket = io('http://localhost:8000/');
 form.submit(function (event) {
     event.preventDefault();
 
@@ -9,16 +12,15 @@ form.submit(function (event) {
         Email: $("#Email").val(),
         Password: $("#Password").val()
     }
-    console.log(data);
     $.ajax({
         url: "http://localhost:8000/user/login",
         type: "POST",
         data: JSON.stringify(data),
         contentType: "application/json; charset=utf-8",
         success: function (response) {
-            document.cookie = `token=${response.token}; path=/; secure; samesite=strict`;
+            sessionStorage.setItem("token", response.token);
             socket.emit('login', response.token);
-            socket.on('connect', () => {
+            socket.on('loginSuccessful', function () {
                 location.href = "./index.html";
             });
         },
@@ -28,22 +30,9 @@ form.submit(function (event) {
         }
     });
 });
-function getCookie(name) {
-    let cookieArr = document.cookie.split("; ");
 
-    for (let i = 0; i < cookieArr.length; i++) {
-        let cookiePair = cookieArr[i].split("=");
-
-        if (name == cookiePair[0]) {
-            return decodeURIComponent(cookiePair[1]);
-        }
-    }
-
-    // Return null if not found
-    return null;
-}
 $(document).ready(function () {
-    const token = getCookie("token");
+    const token = sessionStorage.getItem("token");
 
     if (token) {
         const navbar = $("#narbarBtn");
@@ -54,9 +43,8 @@ $(document).ready(function () {
         navbar.html(logoutButton);
 
         $("#logoutButton").click(function () {
-            document.cookie =
-                "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
+            sessionStorage.removeItem("token");
+            socket.emit('logout');
             window.location.href = "./login.html";
         });
     }
