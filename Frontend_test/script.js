@@ -1,8 +1,4 @@
-var socket;
 
-if (!socket || !socket.connected) {
-    socket = io('http://localhost:8000/');
-}
 const form = $("#loginForm");
 
 form.submit(function (event) {
@@ -19,10 +15,8 @@ form.submit(function (event) {
         contentType: "application/json; charset=utf-8",
         success: function (response) {
             sessionStorage.setItem("token", response.token);
-            socket.emit('login', response.token);
-            socket.on('loginSuccessful', function () {
-                location.href = "./index.html";
-            });
+            location.href = "./index.html";
+            io('http://localhost:8000/', response.token)
         },
         error: function (xhr, status, error) {
             // Request failed
@@ -30,11 +24,12 @@ form.submit(function (event) {
         }
     });
 });
-
 $(document).ready(function () {
     const token = sessionStorage.getItem("token");
 
     if (token) {
+        const socket = io('http://localhost:8000/', { query: { token } });
+
         const navbar = $("#narbarBtn");
         const logoutButton = $(
             `<button class='btn btn-danger'  id='logoutButton'>Logout</button>`
@@ -44,8 +39,16 @@ $(document).ready(function () {
 
         $("#logoutButton").click(function () {
             sessionStorage.removeItem("token");
-            socket.emit('logout');
+            socket.disconnect();
             window.location.href = "./login.html";
+        });
+
+        socket.on("chat message", (data) => {
+            const messages = document.getElementById("messages");
+            const li = document.createElement("li");
+            li.textContent = `${data.user}: ${data.message}`;
+            messages.appendChild(li);
         });
     }
 });
+
