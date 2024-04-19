@@ -1,11 +1,26 @@
 import { Router } from "express";
 import { Message } from "../Modals/message.js";
 import { User } from "../Modals/users.js";
+import { userSocketMap } from "../index.js";
 
 const messageRouter = Router();
 
-messageRouter.get('/userList', async (req, res) => { //this is /user/index page
-    var users = await User.find({ _id: { $ne: req.user.id } }).lean().exec();
+messageRouter.get('/userList', async (req, res) => {
+    var users = await User.aggregate([
+        { $match: { _id: { $ne: req.user.id } } },
+        {
+            $addFields: {
+                status: {
+                    $cond: {
+                        if: { $in: ["$_id", [...userSocketMap.values()].map(socketInfo => socketInfo.userId)] },
+                        then: 'online',
+                        else: 'offline'
+                    }
+                }
+            }
+        }
+    ]);
+
     res.json(users);
 });
 

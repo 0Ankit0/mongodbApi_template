@@ -46,29 +46,6 @@
     </nav>
     <h1>Real-Time Chat App</h1>
 
-    <!-- <section>
-      <div class="container p-1 m-1">
-        <div class="row">
-          <div class="col-lg-2 col=sm-2 col-xl-2 col-2">
-            <div class="card" style="border-radius: 15px">
-              <div class="card-body text-center py-1 d-flex " style="padding-right: 2.5rem;padding-left: 0.5rem;;">
-                <div class="m=1 ">
-                  <img
-                    src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-                    class="rounded-circle img-fluid relative"
-                    style="width: 100px"
-                  />
-                </div>
-                  <h4 class="align-self-center">John</h4>
-                
-                <span style="position: absolute; bottom: 6px;left:55px; width: 15px;height: 15px;" class="rounded-circle bg-success"></span>
-          </div>
-        </div>
-      </div>
-      </div>
-    
-    </section>     -->
-
     <div class="container">
       <div class="row clearfix">
         <div class="col-lg-12">
@@ -185,16 +162,6 @@
         messages.appendChild(li);
       });
 
-      //   document.getElementById("messageForm").addEventListener("submit", (e) => {
-      //     e.preventDefault();
-      //     const input = document.getElementById("messageInput");
-      //     const message = input.value.trim();
-      //     if (message !== "") {
-      //       socket.emit("chat message", { user: "User", message });
-      //       input.value = "";
-      //     }
-      //   });
-      //
       $(document).on("click", ".chat-list li", function () {
         $(".chat-list li").removeClass("active");
         $(this).addClass("active");
@@ -219,7 +186,7 @@
                   <div class="about">
                     <div class="name">${user.Name}</div>
                     <div class="status">
-                      <i class="fa fa-circle offline"></i> offline
+                      <i class="fa fa-circle ${user.status}"></i> ${user.status}
                     </div>
                   </div>
                 </li>`;

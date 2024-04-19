@@ -2,13 +2,14 @@ import * as dotenv from 'dotenv';
 import http from 'http';
 import jwt from 'jsonwebtoken';
 import { Message } from './Modals/message.js';
+import { User } from './Modals/users.js';
 import { Server } from 'socket.io';
 dotenv.config();
 
 import app from "./Routes/route.js"
 import Connect from "./Utils/Connection.js"
 
-let io;
+let io, userSocketMap;
 try {
     const db = await Connect();
 
@@ -23,7 +24,7 @@ try {
         }
     });
 
-    let userSocketMap = new Map(); // Map to store user ID to socket ID mapping
+    userSocketMap = new Map(); // Map to store user ID to socket ID mapping
 
     io.on('connection', (socket) => {
 
@@ -60,6 +61,7 @@ try {
 
         socket.on('logout', () => {
             console.log('Client logged out')
+            User.findByIdAndUpdate(userSocketMap.get(socket.id).userId, { lastActive: new Date() });
             userSocketMap.delete(socket.id);
         });
     });
@@ -71,4 +73,4 @@ try {
     console.log(err);
 }
 
-export { io };
+export { io, userSocketMap };
