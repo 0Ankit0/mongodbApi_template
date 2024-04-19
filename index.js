@@ -9,7 +9,7 @@ dotenv.config();
 import app from "./Routes/route.js"
 import Connect from "./Utils/Connection.js"
 
-let io, userSocketMap;
+let io, userSocketMap, SocketMap;
 try {
     const db = await Connect();
 
@@ -25,7 +25,7 @@ try {
     });
 
     userSocketMap = new Map(); // Map to store user ID to socket ID mapping
-    let SocketMap = new Map(); // Map to store socket ID to user ID mapping
+    SocketMap = new Map(); // Map to store socket ID to user ID mapping
     io.on('connection', (socket) => {
 
         try {
@@ -34,6 +34,7 @@ try {
             const userId = user.id;
             userSocketMap.set(socket.id, { socketId: socket.id, userId }); // Store the user ID and socket ID
             SocketMap.set(userId, socket.id);
+
             // socket.emit('loginSuccessful');
         } catch (error) {
             console.log('Error verifying JWT:', error);
@@ -81,4 +82,4 @@ try {
     console.log(err);
 }
 
-export { io, userSocketMap };
+export { io, userSocketMap, SocketMap };
