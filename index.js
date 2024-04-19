@@ -25,7 +25,7 @@ try {
     });
 
     userSocketMap = new Map(); // Map to store user ID to socket ID mapping
-
+    let SocketMap = new Map(); // Map to store socket ID to user ID mapping
     io.on('connection', (socket) => {
 
         try {
@@ -33,6 +33,7 @@ try {
             const user = jwt.verify(token, process.env.JWTSecret);
             const userId = user.id;
             userSocketMap.set(socket.id, { socketId: socket.id, userId }); // Store the user ID and socket ID
+            SocketMap.set(userId, socket.id);
             // socket.emit('loginSuccessful');
         } catch (error) {
             console.log('Error verifying JWT:', error);
@@ -43,16 +44,14 @@ try {
             try {
                 const { receiverId, message } = data;
 
-                const receiverSocket = userSocketMap.get(receiverId);
                 const senderSocket = userSocketMap.get(socket.id);
-
-                if (receiverSocket) {
+                if (SocketMap.get(receiverId)) {
                     await Message.create({
                         message: message,
                         sender: senderSocket.userId,
                         receiver: receiverId
                     });
-                    socket.to(receiverSocket.socketId).emit('liveMessage', message);
+                    socket.to(SocketMap.get(receiverId)).emit('liveMessage', message);
                 } else {
                     const DbResponse = await Message.create({
                         message: message,

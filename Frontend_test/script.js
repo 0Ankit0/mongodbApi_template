@@ -66,6 +66,7 @@ $(document).ready(function () {
               ${message}
             </div>
           </li>`);
+            $("#messageInput").val("")
         });
     }
 });
