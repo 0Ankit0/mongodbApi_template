@@ -6,7 +6,7 @@ import uploadRouter from "./uploadRouter.js";
 import mailRouter from "./mailRouter.js";
 import path, { dirname } from "path";
 import { fileURLToPath } from 'url';
-import { setupChangeStream } from '../Middleware/ChangeStream.js';
+// import { setupChangeStream } from '../Middleware/ChangeStream.js';
 import messageRouter from "./messageRoute.js";
 
 var app = express();
@@ -15,7 +15,7 @@ app.use(express.json());
 app.get("/", async (req, res) => {
     res.send("Welcome to the home page");
 });
-app.use('/user', setupChangeStream, userRouter);
+app.use('/user', userRouter);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const uploadsDir = path.join(__dirname, '..', 'uploads');
