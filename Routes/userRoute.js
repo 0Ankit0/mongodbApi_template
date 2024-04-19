@@ -6,7 +6,7 @@ import rateLimit from "express-rate-limit";
 const userRouter = Router();
 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 1 * 60 * 1000, // 1 minutes
     max: 5, // limit each IP to 5 requests per windowMs
     handler: function (req, res, /*next*/) {
         const retryAfter = Math.ceil(res.getHeaders()['retry-after'] / 60); // Get the Retry-After header and convert it to minutes
@@ -25,7 +25,7 @@ userRouter.post('/login', limiter, async (req, res) => {
     try {
         const user = await User.findOne({ Email: req.body.Email }).exec();
         const isValid = await comparePassword(user.Password, req.body.Password);
-        if (!isValid) return res.status(status(401)).json({ message: "Invalid password" });
+        if (!isValid) return res.status(401).json({ message: "Invalid password" });
         const token = createJWT(user);
         res.status(200).json({ token: token, message: "Success" });
     } catch (error) {

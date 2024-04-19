@@ -3,13 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bootstrap Landing Page</title>
+    <title>File Upload</title>
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
   </head>
-
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">My Website</a>
@@ -43,15 +42,24 @@
         </ul>
       </div>
     </nav>
-
     <div class="container">
-      <h1>Welcome to My Website</h1>
+      <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <form id="fileUpload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" id="file" />
+                <input type="submit" value="Upload" name="submit" />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="./Socket.js" type="text/javascript"></script>
-    <script src="./script.js" type="text/javascript"></script>
   </body>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="./Socket.js" type="text/javascript"></script>
+  <script src="./script.js" type="text/javascript"></script>
 </html>
