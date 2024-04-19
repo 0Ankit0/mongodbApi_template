@@ -22,11 +22,13 @@ const upload = multer({ storage: storage });
 
 uploadRouter.post("/file", upload.single("file"), (req, res) => {
     // File has been uploaded and saved in the "uploads" folder
-    res.send("File uploaded successfully");
+    const fileUrl = req.file.path;
+    res.send(`File uploaded successfully. File URL: ${fileUrl}`);
 });
 uploadRouter.post("/files", upload.array("files"), (req, res) => {
     // Files have been uploaded and saved in the "uploads" folder 
-    res.send("Files uploaded successfully");
+    const fileUrls = req.files.map(file => file.path);
+    res.send(`Files uploaded successfully. File URLs: ${fileUrls.join(", ")}`);
 });
 
 export default uploadRouter;
