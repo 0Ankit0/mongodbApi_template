@@ -50,7 +50,7 @@
       <div class="row clearfix">
         <div class="col-lg-12">
           <div class="card chat-app">
-            <div id="plist" class="people-list">
+            <div id="plist" class="people-list" style="background-color: white">
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text"
@@ -65,7 +65,7 @@
               </div>
               <ul class="list-unstyled chat-list mt-2 mb-0"></ul>
             </div>
-            <div class="chat">
+            <div class="chat d-none">
               <div class="chat-header clearfix">
                 <div class="row">
                   <div class="col-lg-6">
@@ -138,6 +138,7 @@
     <script src="./script.js" type="text/javascript"></script>
     <script>
       $(document).on("click", ".chat-list li", function () {
+        $(".chat").removeClass("d-none");
         $(".chat-list li").removeClass("active");
         $(this).addClass("active");
         getMessage($(this).data("userid"));
@@ -192,7 +193,11 @@
             response.forEach((message) => {
               messageList += `<li class="clearfix">
                   
-                  <div class="message other-message float-right">
+                  <div class="message ${
+                    message.status == "receiver"
+                      ? "other-message"
+                      : "my-message float-right"
+                  }">
                     ${message.message}
                   </div>
                 </li>`;

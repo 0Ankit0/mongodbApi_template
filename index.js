@@ -52,7 +52,7 @@ try {
                         sender: senderSocket.userId,
                         receiver: receiverId
                     });
-                    socket.to(receiverSocket.socketId).emit('message', message);
+                    socket.to(receiverSocket.socketId).emit('liveMessage', message);
                 } else {
                     const DbResponse = await Message.create({
                         message: message,

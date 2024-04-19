@@ -25,12 +25,12 @@ userRouter.post('/login', limiter, async (req, res) => {
     try {
         const user = await User.findOne({ Email: req.body.Email }).exec();
         const isValid = await comparePassword(user.Password, req.body.Password);
-        if (!isValid) return res.json({ message: "Invalid password" });
+        if (!isValid) return res.status(status(401)).json({ message: "Invalid password" });
         const token = createJWT(user);
-        res.json({ token: token, message: "Success" });
+        res.status(200).json({ token: token, message: "Success" });
     } catch (error) {
         console.log(error);
-        res.json({ token: "", message: "Error occurred" })
+        res.status(401).json({ token: "", message: "Error occurred" })
     }
 });
 
