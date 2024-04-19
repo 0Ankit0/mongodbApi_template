@@ -53,9 +53,11 @@ $(document).ready(function () {
         $(document).on("click", "#sendMessageBtn", function () {
             const message = $("#messageInput").val();
             socket.emit("message", { receiverId: $(this).data("userid"), message: message });
+
+        });
+        socket.on("messageSent", (message) => {
             $(".chat-history ul").append(`<li class="clearfix">
-                  
-            <div class="message other-message float-right">
+            <div class="message my-message">
               ${message}
             </div>
           </li>`);
