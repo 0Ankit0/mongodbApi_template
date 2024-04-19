@@ -1,10 +1,10 @@
 import { Router } from "express";
-import express from "express";
 import { User } from "../Modals/users.js";
 import { createJWT, hashPassword, comparePassword } from "../Middleware/auth.js";
 import rateLimit from "express-rate-limit";
 
 const userRouter = Router();
+
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // limit each IP to 5 requests per windowMs
@@ -15,13 +15,13 @@ const limiter = rateLimit({
         });
     }
 });
-var app = express();
-app.get('/', async (req, res) => { //this is /user/index page
+
+userRouter.get('/', async (req, res) => { //this is /user/index page
     var users = await User.find({}).lean().exec();
     res.json(users);
 });
 
-app.post('/login', limiter, async (req, res) => {
+userRouter.post('/login', limiter, async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.email }).exec();
         const isValid = await comparePassword(user.password, req.body.password);
@@ -30,17 +30,18 @@ app.post('/login', limiter, async (req, res) => {
         res.json({ message: token }); //will go in format token:value
     } catch (error) {
         console.log(error);
-        res.json({ message: "Error occured" })
+        res.json({ message: "Error occurred" })
     }
-})
-app.post('/signup', async (req, res) => {
+});
+
+userRouter.post('/signup', async (req, res) => {
     try {
-        const hash = await hashPassword(req.body.password);
-        const user = await User.create({ ...req.body, password: hash });
-        res.json(user); //will go in format token:value
+        const hash = await hashPassword(req.body.Password);
+        const user = await User.create({ ...req.body, Password: hash });
+        res.json(user);
     } catch (error) {
         res.json({ message: "Duplicate email" })
     }
-})
+});
 
 export default userRouter;
