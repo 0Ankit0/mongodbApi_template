@@ -121,6 +121,7 @@
                   <input
                     type="text"
                     class="form-control"
+                    id="messageInput"
                     placeholder="Enter text here..."
                   />
                 </div>
@@ -139,6 +140,8 @@
       $(document).on("click", ".chat-list li", function () {
         $(".chat-list li").removeClass("active");
         $(this).addClass("active");
+        getMessage($(this).data("userid"));
+
         $("#sendMessageBtn").attr("data-userId", $(this).data("userid"));
         $(".CurrentChattingUser").text($(this).find(".name").text());
       });
@@ -177,7 +180,7 @@
 
       async function getMessage(userId) {
         $.ajax({
-          url: "http://localhost:8000/message/userList",
+          url: "http://localhost:8000/message/",
           type: "POST",
           data: JSON.stringify({ receiver: userId }),
           contentType: "application/json; charset=utf-8",
@@ -188,20 +191,14 @@
             var messageList = ``;
             response.forEach((message) => {
               messageList += `<li class="clearfix">
-                  <div class="message-data text-right">
-                    <span class="message-data-time">10:10 AM, Today</span>
-                    <img
-                      src="https://bootdey.com/img/Content/avatar/avatar7.png"
-                      alt="avatar"
-                    />
-                  </div>
+                  
                   <div class="message other-message float-right">
                     ${message.message}
                   </div>
                 </li>`;
             });
 
-            $(".chat-history ul").append(messageList);
+            $(".chat-history ul").html(messageList);
           },
           error: function (xhr, status, error) {
             console.error("Request failed. Status: " + status);
