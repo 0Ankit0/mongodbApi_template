@@ -16,7 +16,7 @@ const limiter = rateLimit({
     }
 });
 var app = express();
-router.get('/', async (req, res) => { //this is /user/index page
+app.get('/', async (req, res) => { //this is /user/index page
     var users = await User.find({}).lean().exec();
     res.json(users);
 });

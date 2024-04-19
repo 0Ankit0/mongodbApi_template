@@ -3,7 +3,7 @@ import express from "express";
 import multer from "multer";
 
 const uploadRouter = Router();
-var app = express();
+var router = express();
 router.get('/', async (req, res) => { //this is /upload/index page
     res.send("Welcome to the upload page");
 });
