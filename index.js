@@ -16,7 +16,12 @@ try {
     const server = http.createServer(app);
 
     // Initialize Socket.IO
-    io = new Server(server);
+    io = new Server(server, {
+        cors: {
+            origin: "*", // Allow all origins
+            methods: ["*"] // Allow all methods
+        }
+    });
 
     let userSocketMap = new Map(); // Map to store user ID to socket ID mapping
 

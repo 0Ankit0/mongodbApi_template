@@ -1,11 +1,9 @@
-// Assuming you have included the jQuery library
 
-// Assuming you have a form element with the id "loginForm"
 const form = $("#loginForm");
 
-
+const socket = io('http://localhost:8000/');
 form.submit(function (event) {
-    event.preventDefault(); // Prevent the form from submitting normally
+    event.preventDefault();
 
     var data = {
         Email: $("#Email").val(),
@@ -19,9 +17,10 @@ form.submit(function (event) {
         contentType: "application/json; charset=utf-8",
         success: function (response) {
             document.cookie = `token=${response.token}; path=/; secure; samesite=strict`;
-            const socket = io('http://localhost:8000/');
             socket.emit('login', response.token);
-            location.href = "./index.html";
+            socket.on('connect', () => {
+                location.href = "./index.html";
+            });
         },
         error: function (xhr, status, error) {
             // Request failed
@@ -44,13 +43,12 @@ function getCookie(name) {
     return null;
 }
 $(document).ready(function () {
-    // Check if the user is logged in
     const token = getCookie("token");
 
     if (token) {
         const navbar = $("#narbarBtn");
         const logoutButton = $(
-            "<button class='btn btn-danger' id='logoutButton'>Logout</button>"
+            `<button class='btn btn-danger'  id='logoutButton'>Logout</button>`
         );
 
         navbar.html(logoutButton);
