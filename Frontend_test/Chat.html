@@ -17,7 +17,7 @@
 
     <script src="./Socket.js" type="text/javascript"></script>
     <script>
-      const socket = io();
+      const socket = io("http://localhost:8000");
 
       // Handle incoming chat messages
       socket.on("chat message", (data) => {
