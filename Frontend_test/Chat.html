@@ -12,12 +12,15 @@
       href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       rel="stylesheet"
     />
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<style>
-  .select2-search__field{
-    width: 100% !important;
-  }
-  </style>
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .select2-search__field {
+        width: 100% !important;
+      }
+    </style>
     <link rel="stylesheet" href="./chatStyle.css" />
   </head>
   <body>
@@ -57,9 +60,9 @@
         <div class="col-lg-12">
           <div class="card chat-app">
             <div id="plist" class="people-list" style="background-color: white">
-             
-              
-              <button class="btn btn-primary" id="btnAddGroup"> Add Group</button>
+              <button class="btn btn-primary" id="btnAddGroup">
+                Add Group
+              </button>
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text"
@@ -83,7 +86,7 @@
             </div>
             <div class="chat d-none">
               <div class="chat-header clearfix">
-                <div class="row" >
+                <div class="row">
                   <div class="col-lg-11">
                     <a
                       href="javascript:void(0);"
@@ -100,9 +103,7 @@
                       <small>Last seen: 2 hours ago</small>
                     </div>
                   </div>
-                  <div class="col justify-self-end" id="editDiv">
-                      
-                  </div>
+                  <div class="col justify-self-end" id="editDiv"></div>
                 </div>
               </div>
               <div class="chat-history">
@@ -151,28 +152,91 @@
       </div>
     </div>
 
-    <div  id="AddChatGroupModal" class="modal fade" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div
+      id="AddChatGroupModal"
+      class="modal fade"
+      role="dialog"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">User Info</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
           </div>
-          <div class="modal-body ">
-           <div class="form-group">
-            <input type="text" class="form-control" placeholder="Group Name" name="groupName" id="groupName">
-            <select class="js-example-basic-multiple form-control" name="states[]" multiple="multiple">
-             
-            </select>
-           </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Group Name"
+                name="groupName"
+                id="groupName"
+              />
+              <select
+                class="js-example-basic-multiple form-control"
+                name="states[]"
+                multiple="multiple"
+              ></select>
+            </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary btnCreateGroup">Create</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">
+              Close
+            </button>
+            <button type="button" class="btn btn-primary btnCreateGroup">
+              Create
+            </button>
           </div>
         </div>
       </div>
-
+    </div>
+    <div
+      id="EditChatGroupModal"
+      class="modal fade"
+      role="dialog"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">User Info</h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control my-2"
+                placeholder="Group Name"
+                name="groupName"
+                id="EditgroupName"
+              />
+              <select
+                class="js-example-basic-multiple form-control"
+                name="members[]"
+                multiple="multiple"
+                id="EditMembers"
+              ></select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">
+              Close
+            </button>
+            <button type="button" class="btn btn-primary btnEditGroup">
+              Edit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -180,38 +244,69 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="./script.js" type="text/javascript"></script>
     <script>
-      $('.btnCreateGroup').on('click', function(){
-        var selectedUsers = $('.js-example-basic-multiple').val();
+      $(".btnEditGroup").on("click", function () {
+        var selectedUsers = $("#EditMembers").val();
         $.ajax({
-          url: "http://localhost:8000/message/createGroup",
+          url: "http://localhost:8000/message/editGroup",
           type: "POST",
-          data: JSON.stringify({ members: selectedUsers,name: $('input[name="groupName"]').val()}),
+          data: JSON.stringify({
+            members: selectedUsers,
+            name: $("#EditgroupName").val(),
+            groupId: $(this).data("groupid"),
+          }),
           contentType: "application/json; charset=utf-8",
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
           success: function (response) {
-            $(".chat-list .groupList").append(`
-            <li class="clearfix" data-groupId="${response._id}">
-                  <img
-                    src="https://bootdey.com/img/Content/avatar/avatar2.png"
-                    alt="avatar"
-                  />
-                  <div class="about">
-                    <div class="name">${(response.Name) || 'Group'}</div>
-                    <div class="status">
-                      <i class="fa fa-circle online"></i> online
-                    </div>
-                  </div>
-                </li>
-            `);
+            console.log(response);
           },
           error: function (xhr, status, error) {
             console.error("Request failed. Status: " + status);
           },
         });
       });
-      $("#btnAddGroup").click(function(){
+
+      $(document).on("click", "#editGroupBtn", function () {
+        var groupId = $(this).data("groupid");
+        $(".btnEditGroup").attr("data-groupid", groupId);
+        $("#EditChatGroupModal").modal("show");
+      });
+      $(".btnCreateGroup").on("click", function () {
+        var selectedUsers = $(".js-example-basic-multiple").val();
+        $.ajax({
+          url: "http://localhost:8000/message/createGroup",
+          type: "POST",
+          data: JSON.stringify({
+            members: selectedUsers,
+            name: $('input[name="groupName"]').val(),
+          }),
+          contentType: "application/json; charset=utf-8",
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+          success: function (response) {
+            $(".chat-list .groupList").append(`
+                  <li class="clearfix" data-groupId="${response._id}">
+                        <img
+                          src="https://bootdey.com/img/Content/avatar/avatar2.png"
+                          alt="avatar"
+                        />
+                        <div class="about">
+                          <div class="name">${response.Name || "Group"}</div>
+                          <div class="status">
+                            <i class="fa fa-circle online"></i> online
+                          </div>
+                        </div>
+                      </li>
+                  `);
+          },
+          error: function (xhr, status, error) {
+            console.error("Request failed. Status: " + status);
+          },
+        });
+      });
+      $("#btnAddGroup").click(function () {
         $("#AddChatGroupModal").modal("show");
       });
       $(document).on("click", ".chat-list li", function () {
@@ -219,36 +314,50 @@
         $(".chat-list li").removeClass("active");
         $(this).addClass("active");
 
-        if($(this).attr("data-groupid") == undefined || $(this).data("groupid") == ""){
+        if (
+          $(this).attr("data-groupid") == undefined ||
+          $(this).data("groupid") == ""
+        ) {
           getMessage($(this).data("userid"));
           $("#editDiv").html(``);
           $("#sendMessageBtn").attr("data-userId", $(this).data("userid"));
           $(".CurrentChattingUser").text($(this).find(".name").text());
-        }else{
+        } else {
+          $("#EditMembers")
+            .val($(this).data("menbers").split(",") || $(this).data("menbers"))
+            .trigger("change");
+          $("#EditgroupName").val($(this).data("groupname"));
           getGroupMessage($(this).data("groupid"));
-          $("#editDiv").html(`<span role='button' id='editGroupBtn'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" fill="blue" class="w-2 h-2">
-    <path d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.262a1.75 1.75 0 0 0 0-2.474Z" />
-    <path d="M4.75 3.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h6.5c.69 0 1.25-.56 1.25-1.25V9A.75.75 0 0 1 14 9v2.25A2.75 2.75 0 0 1 11.25 14h-6.5A2.75 2.75 0 0 1 2 11.25v-6.5A2.75 2.75 0 0 1 4.75 2H7a.75.75 0 0 1 0 1.5H4.75Z" />
-</svg>
-        </span>`);
+          $("#editDiv")
+            .html(`<span role='button' id='editGroupBtn' data-groupid='${$(
+            this
+          ).data(
+            "groupid"
+          )}'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" fill="blue" class="w-2 h-2">
+          <path d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.262a1.75 1.75 0 0 0 0-2.474Z" />
+          <path d="M4.75 3.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h6.5c.69 0 1.25-.56 1.25-1.25V9A.75.75 0 0 1 14 9v2.25A2.75 2.75 0 0 1 11.25 14h-6.5A2.75 2.75 0 0 1 2 11.25v-6.5A2.75 2.75 0 0 1 4.75 2H7a.75.75 0 0 1 0 1.5H4.75Z" />
+      </svg>
+              </span>`);
           $("#sendMessageBtn").attr("data-groupid", $(this).data("groupid"));
           $(".CurrentChattingUser").text($(this).find(".name").text());
           return;
         }
       });
-      function formatState (state) {
+      function formatState(state) {
         if (!state.id) {
           return state.text;
         }
         var baseUrl = "/user/pages/images/flags";
         var $state = $(
-          '<span><img src="http://localhost:8000/uploads/img.jpeg" width="30" height="30" class="img-flag rounded-circle" /> ' + state.text + '</span>'
+          '<span><img src="http://localhost:8000/uploads/img.jpeg" width="30" height="30" class="img-flag rounded-circle" /> ' +
+            state.text +
+            "</span>"
         );
         return $state;
-      };
+      }
       async function getData() {
-        $('.js-example-basic-multiple').select2({
-          templateResult: formatState
+        $(".js-example-basic-multiple").select2({
+          templateResult: formatState,
         });
         $.ajax({
           url: "http://localhost:8000/message/userList",
@@ -262,20 +371,20 @@
             var UserGroupOptions = ``;
             response.forEach((user) => {
               userList += `<li class="clearfix" data-userId="${user._id}">
-                  <img
-                    src="https://bootdey.com/img/Content/avatar/avatar2.png"
-                    alt="avatar"
-                  />
-                  <div class="about">
-                    <div class="name">${user.Name}</div>
-                    <div class="status">
-                      <i class="fa fa-circle ${user.status}"></i> ${user.status}
-                    </div>
-                  </div>
-                </li>`;
+                        <img
+                          src="https://bootdey.com/img/Content/avatar/avatar2.png"
+                          alt="avatar"
+                        />
+                        <div class="about">
+                          <div class="name">${user.Name}</div>
+                          <div class="status">
+                            <i class="fa fa-circle ${user.status}"></i> ${user.status}
+                          </div>
+                        </div>
+                      </li>`;
 
-                UserGroupOptions += `<option value="${user._id}">${user.Name}</option>`;
-              });
+              UserGroupOptions += `<option value="${user._id}">${user.Name}</option>`;
+            });
             // console.log(user);
             $(" .userList").append(userList);
             $(".js-example-basic-multiple").html(UserGroupOptions);
@@ -284,7 +393,7 @@
             console.error("Request failed. Status: " + status);
           },
         });
-       
+
         $.ajax({
           url: "http://localhost:8000/message/group",
           type: "GET",
@@ -295,28 +404,26 @@
           success: function (response) {
             var group = ``;
             response.forEach((groups) => {
-              group += `<li class="clearfix" data-groupId="${groups._id}">
-                  <img
-                    src="https://bootdey.com/img/Content/avatar/avatar2.png"
-                    alt="avatar"
-                  />
-                  <div class="about">
-                    <div class="name">${(groups.Name) || 'Group'}</div>
-                    <div class="status">
-                      <i class="fa fa-circle online"></i> online
-                    </div>
-                  </div>
-                </li>`;   
+              group += `<li class="clearfix" data-groupId="${groups._id}" data-menbers='${groups.members}' data-groupname='${groups.name}'>
+                        <img
+                          src="https://bootdey.com/img/Content/avatar/avatar2.png"
+                          alt="avatar"
+                        />
+                        <div class="about">
+                          <div class="name">${groups.name}</div>
+                          <div class="status">
+                            <i class="fa fa-circle online"></i> online
+                          </div>
+                        </div>
+                      </li>`;
             });
-            // console.log(user);
+
             $(" .groupList").append(group);
           },
           error: function (xhr, status, error) {
             console.error("Request failed. Status: " + status);
           },
         });
-      
-      
       }
 
       async function getMessage(userId) {
@@ -332,17 +439,16 @@
             var messageList = ``;
             response.forEach((message) => {
               messageList += `<li class="clearfix">
-                  
-                  <div class="message ${
-                    message.status == "receiver"
-                      ? "other-message"
-                      : "my-message float-right"
-                  }">
-                    ${message.message}
-                  </div>
-                </li>`;
-            });
 
+                        <div class="message ${
+                          message.status == "receiver"
+                            ? "other-message"
+                            : "my-message float-right"
+                        }">
+                          ${message.message}
+                        </div>
+                      </li>`;
+            });
             $(".chat-history ul").html(messageList);
           },
           error: function (xhr, status, error) {
@@ -363,17 +469,16 @@
             var messageList = ``;
             response.forEach((message) => {
               messageList += `<li class="clearfix">
-                  
-                  <div class="message ${
-                    message.status == "receiver"
-                      ? "other-message"
-                      : "my-message float-right"
-                  }">
-                    ${message.message}
-                  </div>
-                </li>`;
-            });
 
+                        <div class="message ${
+                          message.status == "receiver"
+                            ? "other-message"
+                            : "my-message float-right"
+                        }">
+                          ${message.message}
+                        </div>
+                      </li>`;
+            });
             $(".chat-history ul").html(messageList);
           },
           error: function (xhr, status, error) {
