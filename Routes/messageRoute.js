@@ -37,6 +37,9 @@ messageRouter.post('/createGroup', async (req, res) => {
 })
 messageRouter.get('/group', async (req, res) => {
     const group = await ChatGroup.find({ members: req.user.id }).populate('members').lean().exec();
+    group.forEach(group => {
+        Socket.join(group._id.toString());
+    });
     res.json(group);
 });
 

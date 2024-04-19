@@ -82,7 +82,13 @@ $(document).ready(function () {
 
         $(document).on("click", "#sendMessageBtn", function () {
             const message = $("#messageInput").val();
-            socket.emit("message", { receiverId: $(this).data("userid"), message: message });
+
+            if ($(this).data("groupid") === undefined || $(this).data("groupid") === "") {
+                socket.emit("groupmessage", { receiverId: $(this).data("userid"), message: message });
+            } else {
+
+                socket.emit("message", { receiverId: $(this).data("userid"), message: message });
+            }
 
         });
         socket.on("messageSent", (message) => {

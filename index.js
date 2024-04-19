@@ -40,7 +40,41 @@ try {
             console.log('Error verifying JWT:', error);
         }
 
+        /* socket.on('groupmessage', async (data) => {
+             try {
+                 const { receiverId, message } = data;
+                 const senderSocket = userSocketMap.get(socket.id);
+                 const group = await ChatGroup.findById(receiverId);
+                 group.members.forEach(member => {
+                     if (SocketMap.get(member.toString())) {
+                         socket.to(SocketMap.get(member.toString())).emit('liveMessage', message);
+                     }
+                 });
+                 await Message.create({
+                     message: message,
+                     sender: senderSocket.userId,
+                     receiver: receiverId
+                 });
+                 socket.emit('messageSent', message);
+             } catch (error) {
+                 console.log('Error handling group message:', error);
+             }
+         })*/
+        socket.on('groupmessage', async (data) => {
+            try {
+                const { receiverId, message } = data;
+                const senderSocket = userSocketMap.get(socket.id);
+                socket.broadcast.to(receiverId.toString()).emit('event', message);
+                await Message.create({
+                    message: message,
+                    sender: senderSocket.userId,
+                    receiver: receiverId
+                });
+                socket.emit('messageSent', message);
+            } catch (error) {
 
+            }
+        })
         socket.on('message', async (data) => {
             try {
                 const { receiverId, message } = data;
