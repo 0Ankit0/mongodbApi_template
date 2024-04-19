@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     Password: { type: String, required: true },
     PhoneNo: { type: Number, required: true },
     Address: { type: String, required: true },
+    LastActive: { type: Date, default: Date.now },
 }, { timestamps: true }
 )
 export const User = mongoose.model('User', userSchema)

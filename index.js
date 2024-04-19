@@ -26,14 +26,13 @@ try {
     let userSocketMap = new Map(); // Map to store user ID to socket ID mapping
 
     io.on('connection', (socket) => {
-        console.log('New client connected');
 
         socket.on('login', (token) => {
             try {
-                console.log('Token:', token);
                 const user = jwt.verify(token, process.env.JWTSecret);
                 const userId = user.id;
                 userSocketMap.set(socket.id, { socketId: socket.id, userId }); // Store user ID and socket ID
+                socket.emit('loginSuccessful');
             } catch (error) {
                 console.log('Error verifying JWT:', error);
             }
@@ -58,9 +57,9 @@ try {
             }
         });
 
-        socket.on('disconnect', () => {
-            console.log('Client disconnected');
-            // Remove user ID to socket ID mapping on disconnect
+
+        socket.on('logout', () => {
+            console.log('Client logged out')
             userSocketMap.delete(socket.id);
         });
     });
