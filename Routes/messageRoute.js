@@ -2,7 +2,6 @@ import { Router } from "express";
 import { Message } from "../Modals/message.js";
 import { User } from "../Modals/users.js";
 import { userSocketMap } from "../index.js";
-import mongoose from 'mongoose';
 
 const messageRouter = Router();
 
