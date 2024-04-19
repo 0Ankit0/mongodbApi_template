@@ -189,7 +189,7 @@
           },
           success: function (response) {
             $(".chat-list .groupList").append(`
-            <li class="clearfix" data-userId="${response._id}">
+            <li class="clearfix" data-groupId="${response._id}">
                   <img
                     src="https://bootdey.com/img/Content/avatar/avatar2.png"
                     alt="avatar"
@@ -215,10 +215,19 @@
         $(".chat").removeClass("d-none");
         $(".chat-list li").removeClass("active");
         $(this).addClass("active");
-        getMessage($(this).data("userid"));
 
-        $("#sendMessageBtn").attr("data-userId", $(this).data("userid"));
-        $(".CurrentChattingUser").text($(this).find(".name").text());
+        if($(this).data("groupid") == undefined || $(this).data("groupid") == ""){
+          getMessage($(this).data("groupid"));
+          $("#sendMessageBtn").attr("data-groupId", $(this).data("groupid"));
+          $(".CurrentChattingUser").text($(this).find(".name").text());
+          return;
+        }else{
+
+          getMessage($(this).data("userid"));
+  
+          $("#sendMessageBtn").attr("data-userId", $(this).data("userid"));
+          $(".CurrentChattingUser").text($(this).find(".name").text());
+        }
       });
       function formatState (state) {
         if (!state.id) {
@@ -279,9 +288,8 @@
           success: function (response) {
             console.log(response);
             var group = ``;
-            var UserGroupOptions = ``;
             response.forEach((groups) => {
-              group += `<li class="clearfix" data-userId="${groups._id}">
+              group += `<li class="clearfix" data-groupId="${groups._id}">
                   <img
                     src="https://bootdey.com/img/Content/avatar/avatar2.png"
                     alt="avatar"
