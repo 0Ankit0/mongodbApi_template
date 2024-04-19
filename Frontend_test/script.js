@@ -18,9 +18,13 @@ form.submit(function (event) {
             location.href = "./index.html";
             io('http://localhost:8000/', response.token)
         },
-        error: function (xhr, status, error) {
-            // Request failed
-            console.error("Request failed. Status: " + status);
+        error: function (xhr, error) {
+            if (xhr.status === 401) {
+                alert(xhr.responseJSON.message);
+            } else {
+                alert("Error occurred", error);
+            }
+
         }
     });
 });
@@ -43,11 +47,12 @@ $(document).ready(function () {
             window.location.href = "./login.html";
         });
 
-        socket.on("chat message", (data) => {
-            const messages = document.getElementById("messages");
-            const li = document.createElement("li");
-            li.textContent = `${data.user}: ${data.message}`;
-            messages.appendChild(li);
+        socket.on("liveMessage", (data) => {
+            $(".chat-history ul").append(`<li class="clearfix">
+            <div class="message other-message">
+              ${data}
+            </div>
+          </li>`);
         });
 
         $(document).on("click", "#sendMessageBtn", function () {
@@ -57,7 +62,7 @@ $(document).ready(function () {
         });
         socket.on("messageSent", (message) => {
             $(".chat-history ul").append(`<li class="clearfix">
-            <div class="message my-message">
+            <div class="message my-message float-right">
               ${message}
             </div>
           </li>`);

@@ -20,9 +20,9 @@ messageRouter.post('/', async (req, res) => { //this is /message/index page
             { sender: req.user.id, receiver: req.body.receiver },
             { sender: req.body.receiver, receiver: req.user.id }
         ]
-    }).sort({ createdAt: 'desc' }).limit(10).lean().exec();
+    }).sort({ createdAt: 'asc' }).limit(10).lean().exec();
     messages.forEach(message => {
-        message.status = (message.sender == req.body.sender) ? 'sender' : 'receiver'
+        message.status = (message.sender.toString() === req.user.id.toString()) ? 'sender' : 'receiver'
     })
     res.json(messages);
 });
