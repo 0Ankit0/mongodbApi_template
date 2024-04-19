@@ -59,8 +59,8 @@ try {
                         sender: senderSocket.userId,
                         receiver: receiverId
                     });
-                    console.log('Message saved in DB:', DbResponse);
                 }
+                socket.emit('messageSent', message);
             } catch (error) {
                 console.log('Error handling message:', error);
             }
