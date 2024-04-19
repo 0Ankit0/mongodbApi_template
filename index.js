@@ -7,7 +7,6 @@ import app from "./Routes/route.js"
 import Connect from "./Utils/Connection.js"
 
 try {
-
     const db = await Connect();
     app.listen(process.env.PORT, () => { //put it at the end of the file
         console.log(`listening on port ${process.env.PORT}`)
