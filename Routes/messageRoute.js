@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Message } from "../Modals/message.js";
 import { User } from "../Modals/users.js";
-import { userSocketMap } from "../index.js";
+import { SocketMap } from "../index.js";
 
 const messageRouter = Router();
 
@@ -9,7 +9,7 @@ messageRouter.get('/userList', async (req, res) => {
     var users = await User.find({ _id: { $ne: req.user.id } }).lean().exec();
 
     users.forEach(user => {
-        user.status = userSocketMap.has(user._id.toString()) ? 'online' : 'offline';
+        user.status = SocketMap.has(user._id.toString()) ? 'online' : 'offline';
     });
     res.json(users);
 });
