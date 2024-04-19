@@ -28,6 +28,31 @@ form.submit(function (event) {
         }
     });
 });
+
+$("#fileUpload").submit(function (event) {
+    event.preventDefault();
+
+    var data = new FormData();
+    data.append("file", $("#file")[0].files[0]);
+
+    $.ajax({
+        url: "http://localhost:8000/upload/file",
+        type: "POST",
+        data: data,
+        contentType: false,
+        processData: false,
+        headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+        },
+        success: function (response) {
+            alert(response);
+            console.log(response);
+        },
+        error: function (xhr, error) {
+            alert("Error occurred", error);
+        }
+    });
+});
 $(document).ready(function () {
     const token = sessionStorage.getItem("token");
 
