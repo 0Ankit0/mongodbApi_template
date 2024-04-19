@@ -28,23 +28,22 @@ try {
 
     io.on('connection', (socket) => {
 
-        socket.on('login', (token) => {
-            try {
-                const user = jwt.verify(token, process.env.JWTSecret);
-                const userId = user.id;
-                userSocketMap.set(socket.id, { socketId: socket.id, userId }); // Store user ID and socket ID
-                socket.emit('loginSuccessful');
-            } catch (error) {
-                console.log('Error verifying JWT:', error);
-            }
-        });
+        try {
+            const token = socket.handshake.query.token;
+            const user = jwt.verify(token, process.env.JWTSecret);
+            const userId = user.id;
+            userSocketMap.set(socket.id, { socketId: socket.id, userId }); // Store the user ID and socket ID
+            // socket.emit('loginSuccessful');
+        } catch (error) {
+            console.log('Error verifying JWT:', error);
+        }
+
 
         socket.on('message', async (data) => {
             const { receiverId, message } = data;
             const receiverSocket = userSocketMap.get(receiverId);
             const senderSocket = userSocketMap.get(socket.id);
             if (receiverSocket) {
-                socket.to(receiverSocket.socketId).emit('message', message);
 
                 try {
                     Message.create({
@@ -52,18 +51,19 @@ try {
                         sender: senderSocket.userId,
                         receiver: receiverId
                     });
+                    socket.to(receiverSocket.socketId).emit('message', message);
                 } catch (error) {
                     console.log('Error saving message to database:', error);
                 }
             }
         });
 
-
-        socket.on('logout', () => {
-            console.log('Client logged out')
-            User.findByIdAndUpdate(userSocketMap.get(socket.id).userId, { lastActive: new Date() });
+        socket.on('disconnect', () => {
+            const res = User.findByIdAndUpdate(userSocketMap.get(socket.id).userId, { LastActive: new Date() });
             userSocketMap.delete(socket.id);
         });
+
+
     });
 
     server.listen(process.env.PORT, () => {

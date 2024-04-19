@@ -63,20 +63,7 @@
                   placeholder="Search..."
                 />
               </div>
-              <ul class="list-unstyled chat-list mt-2 mb-0">
-                <li class="clearfix active">
-                  <img
-                    src="https://bootdey.com/img/Content/avatar/avatar2.png"
-                    alt="avatar"
-                  />
-                  <div class="about">
-                    <div class="name">Aiden Chavez</div>
-                    <div class="status">
-                      <i class="fa fa-circle online"></i> online
-                    </div>
-                  </div>
-                </li>
-              </ul>
+              <ul class="list-unstyled chat-list mt-2 mb-0"></ul>
             </div>
             <div class="chat">
               <div class="chat-header clearfix">
@@ -101,14 +88,8 @@
               </div>
               <div class="chat-history">
                 <ul class="m-b-0">
-                  <li class="clearfix">
-                    <div class="message-data text-right">
-                      <span class="message-data-time">10:10 AM, Today</span>
-                      <img
-                        src="https://bootdey.com/img/Content/avatar/avatar7.png"
-                        alt="avatar"
-                      />
-                    </div>
+                  <!-- <li class="clearfix">
+                   
                     <div class="message other-message float-right">
                       Hi Aiden, how are you? How is the project coming along?
                     </div>
@@ -127,12 +108,12 @@
                       Project has been already finished and I have results to
                       show you.
                     </div>
-                  </li>
+                  </li> -->
                 </ul>
               </div>
               <div class="chat-message clearfix">
                 <div class="input-group mb-0">
-                  <div class="input-group-prepend">
+                  <div class="input-group-prepend" id="sendMessageBtn">
                     <span class="input-group-text"
                       ><i class="fa fa-send"></i
                     ></span>
@@ -155,16 +136,10 @@
     <script src="./Socket.js" type="text/javascript"></script>
     <script src="./script.js" type="text/javascript"></script>
     <script>
-      socket.on("chat message", (data) => {
-        const messages = document.getElementById("messages");
-        const li = document.createElement("li");
-        li.textContent = `${data.user}: ${data.message}`;
-        messages.appendChild(li);
-      });
-
       $(document).on("click", ".chat-list li", function () {
         $(".chat-list li").removeClass("active");
         $(this).addClass("active");
+        $("#sendMessageBtn").attr("data-userId", $(this).data("userid"));
         $(".CurrentChattingUser").text($(this).find(".name").text());
       });
       async function getData() {
@@ -178,7 +153,7 @@
           success: function (response) {
             var userList = ``;
             response.forEach((user) => {
-              userList += `<li class="clearfix ">
+              userList += `<li class="clearfix" data-userId="${user._id}">
                   <img
                     src="https://bootdey.com/img/Content/avatar/avatar2.png"
                     alt="avatar"
@@ -199,6 +174,41 @@
           },
         });
       }
+
+      async function getMessage(userId) {
+        $.ajax({
+          url: "http://localhost:8000/message/userList",
+          type: "POST",
+          data: JSON.stringify({ receiver: userId }),
+          contentType: "application/json; charset=utf-8",
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+          success: function (response) {
+            var messageList = ``;
+            response.forEach((message) => {
+              messageList += `<li class="clearfix">
+                  <div class="message-data text-right">
+                    <span class="message-data-time">10:10 AM, Today</span>
+                    <img
+                      src="https://bootdey.com/img/Content/avatar/avatar7.png"
+                      alt="avatar"
+                    />
+                  </div>
+                  <div class="message other-message float-right">
+                    ${message.message}
+                  </div>
+                </li>`;
+            });
+
+            $(".chat-history ul").append(messageList);
+          },
+          error: function (xhr, status, error) {
+            console.error("Request failed. Status: " + status);
+          },
+        });
+      }
+
       getData();
     </script>
   </body>
