@@ -83,8 +83,8 @@
             </div>
             <div class="chat d-none">
               <div class="chat-header clearfix">
-                <div class="row">
-                  <div class="col-lg-6">
+                <div class="row" >
+                  <div class="col-lg-11">
                     <a
                       href="javascript:void(0);"
                       data-toggle="modal"
@@ -99,6 +99,9 @@
                       <h6 class="m-b-0 CurrentChattingUser">Aiden Chavez</h6>
                       <small>Last seen: 2 hours ago</small>
                     </div>
+                  </div>
+                  <div class="col justify-self-end" id="editDiv">
+                      
                   </div>
                 </div>
               </div>
@@ -216,17 +219,21 @@
         $(".chat-list li").removeClass("active");
         $(this).addClass("active");
 
-        if($(this).data("groupid") == undefined || $(this).data("groupid") == ""){
-          getMessage($(this).data("groupid"));
-          $("#sendMessageBtn").attr("data-groupId", $(this).data("groupid"));
-          $(".CurrentChattingUser").text($(this).find(".name").text());
-          return;
-        }else{
-
+        if($(this).attr("data-groupid") == undefined || $(this).data("groupid") == ""){
           getMessage($(this).data("userid"));
-  
+          $("#editDiv").html(``);
           $("#sendMessageBtn").attr("data-userId", $(this).data("userid"));
           $(".CurrentChattingUser").text($(this).find(".name").text());
+        }else{
+          getGroupMessage($(this).data("groupid"));
+          $("#editDiv").html(`<span role='button' id='editGroupBtn'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" fill="blue" class="w-2 h-2">
+    <path d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.262a1.75 1.75 0 0 0 0-2.474Z" />
+    <path d="M4.75 3.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h6.5c.69 0 1.25-.56 1.25-1.25V9A.75.75 0 0 1 14 9v2.25A2.75 2.75 0 0 1 11.25 14h-6.5A2.75 2.75 0 0 1 2 11.25v-6.5A2.75 2.75 0 0 1 4.75 2H7a.75.75 0 0 1 0 1.5H4.75Z" />
+</svg>
+        </span>`);
+          $("#sendMessageBtn").attr("data-groupid", $(this).data("groupid"));
+          $(".CurrentChattingUser").text($(this).find(".name").text());
+          return;
         }
       });
       function formatState (state) {
@@ -286,7 +293,6 @@
             Authorization: "Bearer " + sessionStorage.getItem("token"),
           },
           success: function (response) {
-            console.log(response);
             var group = ``;
             response.forEach((groups) => {
               group += `<li class="clearfix" data-groupId="${groups._id}">
@@ -316,6 +322,37 @@
       async function getMessage(userId) {
         $.ajax({
           url: "http://localhost:8000/message/",
+          type: "POST",
+          data: JSON.stringify({ receiver: userId }),
+          contentType: "application/json; charset=utf-8",
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+          success: function (response) {
+            var messageList = ``;
+            response.forEach((message) => {
+              messageList += `<li class="clearfix">
+                  
+                  <div class="message ${
+                    message.status == "receiver"
+                      ? "other-message"
+                      : "my-message float-right"
+                  }">
+                    ${message.message}
+                  </div>
+                </li>`;
+            });
+
+            $(".chat-history ul").html(messageList);
+          },
+          error: function (xhr, status, error) {
+            console.error("Request failed. Status: " + status);
+          },
+        });
+      }
+      async function getGroupMessage(userId) {
+        $.ajax({
+          url: "http://localhost:8000/message/groupMessage",
           type: "POST",
           data: JSON.stringify({ receiver: userId }),
           contentType: "application/json; charset=utf-8",

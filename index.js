@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { Message } from './Modals/message.js';
 import { User } from './Modals/users.js';
 import { Server } from 'socket.io';
+import { ChatGroup } from './Modals/chatGroup.js';
 dotenv.config();
 
 import app from "./Routes/route.js"
@@ -26,7 +27,7 @@ try {
 
     userSocketMap = new Map(); // Map to store user ID to socket ID mapping
     SocketMap = new Map(); // Map to store socket ID to user ID mapping
-    io.on('connection', (socket) => {
+    io.on('connection', async (socket) => {
 
         try {
             const token = socket.handshake.query.token;
@@ -34,6 +35,11 @@ try {
             const userId = user.id;
             userSocketMap.set(socket.id, { socketId: socket.id, userId }); // Store the user ID and socket ID
             SocketMap.set(userId, socket.id);
+
+            const groups = await ChatGroup.find({ members: userId }).populate('members').lean().exec();
+            groups.forEach(group => {
+                socket.join(group._id.toString());
+            });
 
             // socket.emit('loginSuccessful');
         } catch (error) {
@@ -64,7 +70,7 @@ try {
             try {
                 const { receiverId, message } = data;
                 const senderSocket = userSocketMap.get(socket.id);
-                socket.broadcast.to(receiverId.toString()).emit('event', message);
+                socket.broadcast.to(receiverId.toString()).emit('liveMessage', message);
                 await Message.create({
                     message: message,
                     sender: senderSocket.userId,

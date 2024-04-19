@@ -46,7 +46,6 @@ $("#fileUpload").submit(function (event) {
         },
         success: function (response) {
             alert(response);
-            console.log(response);
         },
         error: function (xhr, error) {
             alert("Error occurred", error);
@@ -84,10 +83,10 @@ $(document).ready(function () {
             const message = $("#messageInput").val();
 
             if ($(this).data("groupid") === undefined || $(this).data("groupid") === "") {
-                socket.emit("groupmessage", { receiverId: $(this).data("userid"), message: message });
-            } else {
-
                 socket.emit("message", { receiverId: $(this).data("userid"), message: message });
+            } else {
+                socket.emit("groupmessage", { receiverId: $(this).data("groupid"), message: message });
+
             }
 
         });

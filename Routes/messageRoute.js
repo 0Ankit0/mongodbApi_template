@@ -26,6 +26,15 @@ messageRouter.post('/', async (req, res) => { //this is /message/index page
     })
     res.json(messages);
 });
+messageRouter.post('/groupMessage', async (req, res) => { //this is /message/index page
+    const messages = await Message.find({
+        receiver: req.body.receiver
+    }).sort({ createdAt: 'asc' }).limit(10).lean().exec();
+    messages.forEach(message => {
+        message.status = (message.sender.toString() === req.user.id.toString()) ? 'sender' : 'receiver'
+    })
+    res.json(messages);
+});
 
 messageRouter.post('/createGroup', async (req, res) => {
     req.body.members.push(req.user.id);
@@ -36,10 +45,9 @@ messageRouter.post('/createGroup', async (req, res) => {
     res.status(200).json(group);
 })
 messageRouter.get('/group', async (req, res) => {
-    const group = await ChatGroup.find({ members: req.user.id }).populate('members').lean().exec();
-    group.forEach(group => {
-        Socket.join(group._id.toString());
-    });
+    // const group = await ChatGroup.find({ members: req.user.id }).populate('members').lean().exec();
+    const group = await ChatGroup.find({ members: req.user.id }).lean().exec();
+
     res.json(group);
 });
 
