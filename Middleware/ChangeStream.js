@@ -3,16 +3,16 @@ import { User } from '../Modals/users.js';
 
 const eventEmitter = new EventEmitter();
 
-const setupChangeStream = async (req, res, next) => {
+async function setupChangeStream(req, res, next) {//make sure your database is replica set enabled
     const changeStream = User.watch();
     try {
         changeStream.on('change', (data) => {
             eventEmitter.emit('change', data);
         });
         next();
+        await closeChangeStream(5000, changeStream);
     } catch (error) {
-        console.error("Error occurred in change stream", error);
-        res.status(500).send('Error occurred while setting up change stream');
+        console.error("Error occured in change stream", error);
     }
 }
 
@@ -20,4 +20,14 @@ eventEmitter.on('change', (change) => {
     console.log('Change detected:', change);
 });
 
+
+function closeChangeStream(timeInMs = 10000, changeStream) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log("Closing the change stream");
+            changeStream.close();
+        }, timeInMs);
+    })
+
+}
 export { setupChangeStream };
