@@ -6,8 +6,6 @@ import uploadRouter from "./uploadRouter.js";
 import mailRouter from "./mailRouter.js";
 import path, { dirname } from "path";
 import { fileURLToPath } from 'url';
-// import { setupChangeStream } from '../Middleware/ChangeStream.js';
-import messageRouter from "./messageRoute.js";
 
 var app = express();
 app.use(Cors());
@@ -24,6 +22,5 @@ const uploadsDir = path.join(__dirname, '..', 'uploads');
 app.use('/uploads', express.static(uploadsDir));
 app.use('/upload', protect, uploadRouter);
 
-app.use('/sendmain', protect, mailRouter);
-app.use('/message', protect, messageRouter);
+app.use('/sendmail', protect, mailRouter);
 export default app;
