@@ -40,23 +40,32 @@ try {
 
 
         socket.on('message', async (data) => {
-            const { receiverId, message } = data;
-            const receiverSocket = userSocketMap.get(receiverId);
-            const senderSocket = userSocketMap.get(socket.id);
-            if (receiverSocket) {
+            try {
+                const { receiverId, message } = data;
 
-                try {
-                    Message.create({
+                const receiverSocket = userSocketMap.get(receiverId);
+                const senderSocket = userSocketMap.get(socket.id);
+
+                if (receiverSocket) {
+                    await Message.create({
                         message: message,
                         sender: senderSocket.userId,
                         receiver: receiverId
                     });
                     socket.to(receiverSocket.socketId).emit('message', message);
-                } catch (error) {
-                    console.log('Error saving message to database:', error);
+                } else {
+                    const DbResponse = await Message.create({
+                        message: message,
+                        sender: senderSocket.userId,
+                        receiver: receiverId
+                    });
+                    console.log('Message saved in DB:', DbResponse);
                 }
+            } catch (error) {
+                console.log('Error handling message:', error);
             }
         });
+
 
         socket.on('disconnect', () => {
             const res = User.findByIdAndUpdate(userSocketMap.get(socket.id).userId, { LastActive: new Date() });

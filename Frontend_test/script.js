@@ -49,6 +49,17 @@ $(document).ready(function () {
             li.textContent = `${data.user}: ${data.message}`;
             messages.appendChild(li);
         });
+
+        $(document).on("click", "#sendMessageBtn", function () {
+            const message = $("#messageInput").val();
+            socket.emit("message", { receiverId: $(this).data("userid"), message: message });
+            $(".chat-history ul").append(`<li class="clearfix">
+                  
+            <div class="message other-message float-right">
+              ${message}
+            </div>
+          </li>`);
+        });
     }
 });
 
