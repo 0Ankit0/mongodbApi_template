@@ -38,12 +38,26 @@ messageRouter.post('/groupMessage', async (req, res) => { //this is /message/ind
 
 messageRouter.post('/createGroup', async (req, res) => {
     req.body.members.push(req.user.id);
-    const group = ChatGroup.create({
-        name: req.body.name,
-        members: req.body.members
-    }).lean().exec();
+    const group = await ChatGroup.create({
+        ...req.body
+    });
     res.status(200).json(group);
 })
+messageRouter.post('/editGroup', async (req, res) => {
+    try {
+        req.body.members.push(req.user.id);
+        const group = await ChatGroup.findOneAndUpdate(
+            { _id: req.body.groupId },
+            req.body,
+            { new: true }
+        ).lean();
+        res.status(200).json(group);
+    } catch (error) {
+        return res.status(401).json({ message: error.message });
+    }
+});
+
+
 messageRouter.get('/group', async (req, res) => {
     // const group = await ChatGroup.find({ members: req.user.id }).populate('members').lean().exec();
     const group = await ChatGroup.find({ members: req.user.id }).lean().exec();
