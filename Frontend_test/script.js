@@ -2,7 +2,7 @@
 
 // Assuming you have a form element with the id "loginForm"
 const form = $("#loginForm");
-const socket = io();
+
 
 form.submit(function (event) {
     event.preventDefault(); // Prevent the form from submitting normally
@@ -19,6 +19,7 @@ form.submit(function (event) {
         contentType: "application/json; charset=utf-8",
         success: function (response) {
             document.cookie = `token=${response.token}; path=/; secure; samesite=strict`;
+            const socket = io('http://localhost:8000/');
             socket.emit('login', response.token);
             location.href = "./index.html";
         },
